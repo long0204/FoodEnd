@@ -92,6 +92,14 @@ app.get('/api/users/:uid/history', async (req, res) => {
     if (error) return res.status(400).json({ error: error.message });
     res.json(data);
 });
+app.get('/api/restaurants', async (req, res) => {
+    const { data, error } = await supabase
+        .from('restaurants')
+        .order('rating', { ascending: false }); 
+
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data);
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Backend FoodTour running on port ${PORT}`));
