@@ -43,7 +43,7 @@ app.get('/api/restaurants/in-bounds', async (req, res) => {
 
 app.get('/api/restaurants/suggestions', async (req, res) => {
     const { lat, lng, radius = 5000 } = req.query;
-    const hour = new Date().getHours() + 7; 
+    const hour = new Date().getHours(); 
     
     let mealType = 'Cà phê';
     if (hour >= 6 && hour < 10) mealType = 'Bữa sáng';
