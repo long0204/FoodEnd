@@ -126,17 +126,31 @@ app.get('/api/restaurants/suggestions', async (req, res) => {
     const { lat, lng, radius = 5000 } = req.query;
     const hour = new Date().getHours(); 
     
-    let mealType = 'Cà phê';
-    if (hour >= 6 && hour < 10) mealType = 'Bữa sáng';
-    else if (hour >= 11 && hour < 14) mealType = 'Bữa trưa';
-    else if (hour >= 18 && hour < 22) mealType = 'Bữa tối';
+    let mealTypeLabel = 'Cà phê';
+    if (hour >= 6 && hour < 10) mealTypeLabel = 'Bữa sáng';
+    else if (hour >= 11 && hour < 14) mealTypeLabel = 'Bữa trưa';
+    else if (hour >= 18 && hour < 22) mealTypeLabel = 'Bữa tối';
 
     const { data, error } = await supabase.rpc('suggest_restaurants', {
-        user_lat: parseFloat(lat), user_lng: parseFloat(lng),
-        radius_meters: parseInt(radius), meal_type: mealType
+        user_lat: parseFloat(lat), 
+        user_lng: parseFloat(lng),
+        radius_meters: parseInt(radius), 
+        meal_type: null // <--- Quan trọng nhất ở đây
     });
+
     if (error) return res.status(400).json({ error: error.message });
-    res.json({ meal_type: mealType, restaurants: data });
+
+    const formattedData = data.map(item => ({
+        ...item,
+        name: item.name || item.Name,
+        address: item.address || item.Address,
+        type: item.type || item.Type,
+        price: item.price || item.Price,
+        rating: item.rating || item.Rating,
+        description: item.description || item.Review
+    }));
+
+    res.json({ meal_type: mealTypeLabel, restaurants: formattedData });
 });
 
 app.get('/api/restaurants/:id/reviews', async (req, res) => {
