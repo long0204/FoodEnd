@@ -8,6 +8,25 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use((req, res, next) => {
+    // Lấy thời gian hiện tại
+    const time = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+    
+    console.log(`\n[${time}] 🚀 ${req.method} ${req.originalUrl}`);
+    
+    // Nếu API có gửi data trên URL (Ví dụ: ?lat=...&lng=...)
+    if (Object.keys(req.query).length > 0) {
+        console.log('   👉 Query:', req.query);
+    }
+    
+    // Nếu API có gửi data trong Body (Ví dụ: Thêm quán, viết đánh giá)
+    if (Object.keys(req.body).length > 0) {
+        console.log('   📦 Body:', req.body);
+    }
+    
+    next(); // Cực kỳ quan trọng: Cho phép request đi tiếp xuống các API bên dưới
+});
+
 // Khởi tạo Firebase Admin
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
