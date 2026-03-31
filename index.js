@@ -143,10 +143,22 @@ app.get('/api/users/:uid/history', async (req, res) => {
 app.get('/api/restaurants', async (req, res) => {
     const { data, error } = await supabase
         .from('restaurants')
-        .select('*') 
+        .select('*')
         .order('rating', { ascending: false }); 
+
     if (error) return res.status(400).json({ error: error.message });
-    res.json(data);
+
+    const formattedData = data.map(item => ({
+        ...item,
+        name: item.name || item.Name,
+        address: item.address || item.Address,
+        type: item.type || item.Type,
+        price: item.price || item.Price,
+        rating: item.rating || item.Rating,
+        description: item.description || item.Review
+    }));
+
+    res.json(formattedData);
 });
 
 const PORT = process.env.PORT || 3000;
