@@ -92,16 +92,21 @@ app.post('/api/restaurants', verifyToken, async (req, res) => {
 });
 
 app.post('/api/reviews', verifyToken, async (req, res) => {
-    const { restaurant_id, user_id, rating, comment } = req.body;
+    const { restaurant_id, user_id, rating, comment, image_urls } = req.body; // Nhận image_urls (mảng)
     
-    // Bảo mật: Đảm bảo user không thể dùng UID của người khác để đánh giá
     if (req.user.uid !== user_id) {
         return res.status(403).json({ message: "Bạn không thể đánh giá thay người khác" });
     }
 
     const { data, error } = await supabase
         .from('reviews')
-        .insert([{ restaurant_id, user_id, rating, comment }]);
+        .insert([{ 
+            restaurant_id, 
+            user_id, 
+            rating, 
+            comment, 
+            image_urls 
+        }]);
 
     if (error) return res.status(400).json({ error: error.message });
     res.json({ message: "Gửi đánh giá thành công", data });
